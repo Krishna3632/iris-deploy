@@ -1,7 +1,8 @@
 from flask import Flask, render_template, request
-
+import requests
 import numpy
 import joblib
+from io import BytesIO
 
 app = Flask(__name__)
   # Ensure model is available
@@ -9,7 +10,20 @@ model_path='model.pkl'
 model=joblib.load(model_path)
 # Load the model
 # iris_model = joblib.load(MODEL_PATH)
+MODEL_URL = "https://huggingface.co/krishnash16/Iris/resolve/main/model.pkl"
+MODEL_PATH = "model.pkl"
 
+def load_model():
+    model_url = MODEL_URL
+    try:
+        response = requests.get(model_url)
+        response.raise_for_status()
+        return joblib.load(BytesIO(response.content))
+    except Exception as e:
+        print(f"Error loading")
+        return None
+model =load_model()
+    
 @app.route('/', methods=['GET', 'POST'])
 def iris():
     if request.method == 'POST':
@@ -26,5 +40,4 @@ def iris():
             return render_template("index.html", prediction=f"Error: {str(e)}")
     return render_template("index.html", prediction=None)
 
-if __name__ == "__main__":
-    app.run()
+
