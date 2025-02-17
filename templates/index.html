@@ -15,19 +15,19 @@
             <form id="predictionForm">
                 <div class="mb-4">
                     <label for="sepal_length" class="block text-gray-700 font-medium mb-2">Sepal Length (cm)</label>
-                    <input type="text" id="sepal_length" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <input type="number" id="sepal_length" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                 </div>
                 <div class="mb-4">
                     <label for="sepal_width" class="block text-gray-700 font-medium mb-2">Sepal Width (cm)</label>
-                    <input type="text" id="sepal_width" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <input type="number" id="sepal_width" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                 </div>
                 <div class="mb-4">
                     <label for="petal_length" class="block text-gray-700 font-medium mb-2">Petal Length (cm)</label>
-                    <input type="text" id="petal_length" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <input type="number" id="petal_length" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                 </div>
                 <div class="mb-4">
                     <label for="petal_width" class="block text-gray-700 font-medium mb-2">Petal Width (cm)</label>
-                    <input type="text" id="petal_width" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <input type="number" id="petal_width" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                 </div>
                 <div class="mb-4">
                     <button type="button" onclick="predictIris()" class="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500">Submit</button>
@@ -36,14 +36,14 @@
 
             <div id="result" class="hidden mt-6 p-4 bg-gray-100 rounded-md shadow-md">
                 <h3 class="text-xl font-bold mb-2">Model Output</h3>
-                <p id="output" class="text-gray-700">Predicted Class: <span id="predictionText"></span></p>
+                <p class="text-gray-700">Predicted Class: <span id="prediction"></span></p>
             </div>
         </div>
     </div>
 
     <script>
         async function predictIris() {
-            const apiUrl = "https://iris-render.onrender.com/";  // Replace with your Render API URL
+            const apiUrl = "/predict"; // Local Flask endpoint
 
             const data = {
                 sepal_length: parseFloat(document.getElementById("sepal_length").value),
@@ -64,8 +64,12 @@
                 }
 
                 const result = await response.json();
-                document.getElementById("result").classList.remove("hidden");
-                document.getElementById("predictionText").innerText = result.answer;
+                if (result.prediction) {
+                    document.getElementById("result").classList.remove("hidden");
+                    document.getElementById("prediction").innerText = result.prediction;
+                } else {
+                    alert("Error: No prediction received.");
+                }
             } catch (error) {
                 console.error("Error:", error);
                 alert("Error fetching prediction. Please try again.");
