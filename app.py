@@ -7,13 +7,15 @@ API_URL = "https://iris-render.onrender.com/"  # Ensure this API URL is correct
 
 @app.route("/", methods=["GET"])
 def index():
+    
+
     return render_template("index.html")
 
 @app.route("/predict", methods=["POST"])
 def predict():
     try:
         # Get JSON data from request
-        data = request.json
+        data = request.json()
         sepal_length = float(data["sepal_length"])
         sepal_width = float(data["sepal_width"])
         petal_length = float(data["petal_length"])
