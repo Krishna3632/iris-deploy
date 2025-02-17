@@ -1,44 +1,76 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ML Model Input Form</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"></link>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
 </head>
 <body class="bg-gray-100 font-roboto">
     <div class="container mx-auto p-4">
         <div class="max-w-md mx-auto bg-white p-6 rounded-lg shadow-md">
             <h2 class="text-2xl font-bold mb-4">Iris Model Input Form</h2>
-            <form method="POST">
+            <form id="predictionForm">
                 <div class="mb-4">
                     <label for="sepal_length" class="block text-gray-700 font-medium mb-2">Sepal Length (cm)</label>
-                    <input type="text" id="sepal_length" name="sepal_length" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <input type="text" id="sepal_length" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                 </div>
                 <div class="mb-4">
                     <label for="sepal_width" class="block text-gray-700 font-medium mb-2">Sepal Width (cm)</label>
-                    <input type="text" id="sepal_width" name="sepal_width" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <input type="text" id="sepal_width" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                 </div>
                 <div class="mb-4">
                     <label for="petal_length" class="block text-gray-700 font-medium mb-2">Petal Length (cm)</label>
-                    <input type="text" id="petal_length" name="petal_length" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <input type="text" id="petal_length" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                 </div>
                 <div class="mb-4">
                     <label for="petal_width" class="block text-gray-700 font-medium mb-2">Petal Width (cm)</label>
-                    <input type="text" id="petal_width" name="petal_width" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <input type="text" id="petal_width" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                 </div>
                 <div class="mb-4">
-                    <button type="submit" class="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500">Submit</button>
+                    <button type="button" onclick="predictIris()" class="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500">Submit</button>
                 </div>
             </form>
-            {% if prediction is not none %}
-            <div id="result" class="mt-6 p-4 bg-gray-100 rounded-md shadow-md">
+
+            <div id="result" class="hidden mt-6 p-4 bg-gray-100 rounded-md shadow-md">
                 <h3 class="text-xl font-bold mb-2">Model Output</h3>
-                <p id="output" class="text-gray-700">Predicted Class: {{ prediction }}</p>
+                <p id="output" class="text-gray-700">Predicted Class: <span id="predictionText"></span></p>
             </div>
-            {% endif %}
         </div>
     </div>
+
+    <script>
+        async function predictIris() {
+            const apiUrl = "https://your-api-url.onrender.com/";  // Replace with your Render API URL
+
+            const data = {
+                sepal_length: parseFloat(document.getElementById("sepal_length").value),
+                sepal_width: parseFloat(document.getElementById("sepal_width").value),
+                petal_length: parseFloat(document.getElementById("petal_length").value),
+                petal_width: parseFloat(document.getElementById("petal_width").value)
+            };
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(data)
+                });
+
+                if (!response.ok) {
+                    throw new Error("Failed to fetch prediction");
+                }
+
+                const result = await response.json();
+                document.getElementById("result").classList.remove("hidden");
+                document.getElementById("predictionText").innerText = result.answer;
+            } catch (error) {
+                console.error("Error:", error);
+                alert("Error fetching prediction. Please try again.");
+            }
+        }
+    </script>
 </body>
 </html>
